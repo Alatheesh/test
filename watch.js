@@ -15,6 +15,13 @@ document.getElementById(
   "loadingScreen"
 );
 
+const bufferLoader=
+document.getElementById(
+  "bufferLoader"
+);
+
+// START STREAMING
+
 function startStreaming(){
 
   const params=
@@ -27,7 +34,7 @@ function startStreaming(){
 
   if(!link){
 
-    alert(
+    showToast(
       "No stream link found"
     );
 
@@ -68,13 +75,21 @@ function startStreaming(){
 
 }
 
+// SKIP FORWARD
+
 function skipForward(){
 
   player.currentTime(
     player.currentTime() + 10
   );
 
+  showToast(
+    "+10 Seconds"
+  );
+
 }
+
+// SKIP BACKWARD
 
 function skipBackward(){
 
@@ -82,7 +97,13 @@ function skipBackward(){
     player.currentTime() - 10
   );
 
+  showToast(
+    "-10 Seconds"
+  );
+
 }
+
+// PLAY / PAUSE
 
 function togglePlay(){
 
@@ -90,25 +111,42 @@ function togglePlay(){
 
     player.play();
 
+    showToast(
+      "Playing"
+    );
+
   }
 
   else{
 
     player.pause();
 
+    showToast(
+      "Paused"
+    );
+
   }
 
 }
+
+// FULLSCREEN
 
 function toggleFullscreen(){
 
-  if(player.requestFullscreen){
+  const wrapper=
+  document.querySelector(
+    ".player-card"
+  );
 
-    player.requestFullscreen();
+  if(wrapper.requestFullscreen){
+
+    wrapper.requestFullscreen();
 
   }
 
 }
+
+// PLAYBACK SPEED
 
 document
 .getElementById("speedControl")
@@ -120,8 +158,15 @@ document
       Number(e.target.value)
     );
 
+    showToast(
+      "Speed: " +
+      e.target.value + "x"
+    );
+
   }
 );
+
+// COPY STREAM LINK
 
 function copyStreamLink(){
 
@@ -129,11 +174,13 @@ function copyStreamLink(){
     location.href
   );
 
-  alert(
+  showToast(
     "Stream link copied"
   );
 
 }
+
+// OPEN EXTERNAL PLAYER
 
 function openExternalPlayer(){
 
@@ -149,12 +196,148 @@ function openExternalPlayer(){
 
 }
 
-player.on('loadedmetadata',()=>{
+// VIDEO EVENTS
 
-  loadingScreen.style.display=
-  "none";
+player.on(
+  'loadedmetadata',
+  ()=>{
 
-});
+    loadingScreen.style.display=
+    "none";
+
+  }
+);
+
+// BUFFERING START
+
+player.on(
+  "waiting",
+  ()=>{
+
+    bufferLoader.classList.add(
+      "show"
+    );
+
+  }
+);
+
+// BUFFERING END
+
+player.on(
+  "playing",
+  ()=>{
+
+    bufferLoader.classList.remove(
+      "show"
+    );
+
+  }
+);
+
+// KEYBOARD SHORTCUTS
+
+document.addEventListener(
+  "keydown",
+  (e)=>{
+
+    // SPACE
+
+    if(e.code === "Space"){
+
+      e.preventDefault();
+
+      togglePlay();
+
+    }
+
+    // RIGHT ARROW
+
+    if(e.code === "ArrowRight"){
+
+      skipForward();
+
+    }
+
+    // LEFT ARROW
+
+    if(e.code === "ArrowLeft"){
+
+      skipBackward();
+
+    }
+
+    // FULLSCREEN
+
+    if(e.key.toLowerCase() === "f"){
+
+      toggleFullscreen();
+
+    }
+
+  }
+);
+
+// PREMIUM TOAST
+
+function showToast(text){
+
+  const toast=
+  document.createElement(
+    "div"
+  );
+
+  toast.innerText=
+  text;
+
+  toast.style.position=
+  "fixed";
+
+  toast.style.bottom=
+  "30px";
+
+  toast.style.left=
+  "50%";
+
+  toast.style.transform=
+  "translateX(-50%)";
+
+  toast.style.padding=
+  "14px 22px";
+
+  toast.style.borderRadius=
+  "14px";
+
+  toast.style.background=
+  "rgba(0,0,0,0.7)";
+
+  toast.style.backdropFilter=
+  "blur(10px)";
+
+  toast.style.color=
+  "white";
+
+  toast.style.zIndex=
+  "9999";
+
+  toast.style.fontSize=
+  "14px";
+
+  toast.style.boxShadow=
+  "0 0 20px rgba(0,0,0,0.5)";
+
+  document.body.appendChild(
+    toast
+  );
+
+  setTimeout(()=>{
+
+    toast.remove();
+
+  },1500);
+
+}
+
+// AUTO START
 
 window.addEventListener(
   "DOMContentLoaded",
