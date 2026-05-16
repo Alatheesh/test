@@ -60,19 +60,37 @@ function startStreaming(){
   const link =
   params.get("link");
 
-  // 🔥 GET AUDIOS ARRAY
+  // GET AUDIOS
 
   const audiosRaw =
   params.get("audios");
 
   try{
 
-    audioLinks =
+    const parsedAudios =
     JSON.parse(
       decodeURIComponent(
         audiosRaw || "[]"
       )
     );
+
+    audioLinks =
+    parsedAudios.map(item=>{
+
+      const parts =
+      item.split("|");
+
+      return {
+
+        lang:
+        parts[0],
+
+        url:
+        parts[1]
+
+      };
+
+    });
 
   }
 
@@ -148,6 +166,11 @@ function startStreaming(){
   // PLAYER READY
 
   player.ready(()=>{
+
+    // IMPORTANT
+    // MUTE ORIGINAL VIDEO AUDIO
+
+    player.muted(true);
 
     statusText.innerText =
     "Video loaded ✅";
@@ -231,29 +254,64 @@ function buildLanguageSelector(){
 
 // LOAD AUDIO
 
-function loadAudio(audioObj){
+async function loadAudio(audioObj){
 
   if(!audioObj)
   return;
 
-  const currentTime =
-  player.currentTime();
+  try{
 
-  audioPlayer.src =
-  audioObj.url;
+    const currentTime =
+    player.currentTime();
 
-  audioPlayer.currentTime =
-  currentTime;
+    // STOP OLD AUDIO
 
-  audioPlayer.play();
+    audioPlayer.pause();
 
-  logDebug(
+    // LOAD NEW AUDIO
 
-    "Audio changed to: " +
+    audioPlayer.src =
+    audioObj.url;
 
-    audioObj.lang
+    audioPlayer.load();
 
-  );
+    // WAIT FOR LOAD
+
+    audioPlayer.onloadedmetadata =
+    async ()=>{
+
+      audioPlayer.currentTime =
+      currentTime;
+
+      if(!player.paused()){
+
+        await audioPlayer.play();
+
+      }
+
+      logDebug(
+
+        "Audio changed to: " +
+
+        audioObj.lang
+
+      );
+
+    };
+
+  }
+
+  catch(error){
+
+    logDebug(
+
+      "Audio switch failed: " +
+
+      error.message
+
+    );
+
+  }
 
 }
 
