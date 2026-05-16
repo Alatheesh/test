@@ -11,6 +11,9 @@ h2{
   margin-bottom:20px;
 }
 
+
+/* TOP BUTTONS */
+
 .top-buttons{
   margin-bottom:20px;
 }
@@ -24,11 +27,52 @@ button{
   cursor:pointer;
   font-size:15px;
   margin:5px;
+  transition:0.2s;
 }
 
 button:hover{
   opacity:0.9;
+  transform:scale(1.03);
 }
+
+
+/* LANGUAGE SELECTOR */
+
+.language-wrapper{
+  margin-bottom:20px;
+}
+
+#languageSelect{
+
+  background:#111;
+  color:white;
+
+  border:1px solid #333;
+
+  padding:10px 16px;
+
+  border-radius:8px;
+
+  font-size:15px;
+
+  cursor:pointer;
+
+  min-width:180px;
+
+  transition:0.2s;
+}
+
+#languageSelect:hover{
+  border-color:#007bff;
+}
+
+#languageSelect:focus{
+  outline:none;
+  border-color:#007bff;
+}
+
+
+/* PLAYER */
 
 .player-wrapper{
   width:100%;
@@ -50,12 +94,18 @@ button:hover{
   background:black;
 }
 
+
+/* STATUS */
+
 .status{
   margin-top:20px;
   color:#00ff88;
   font-size:14px;
   line-height:1.6;
 }
+
+
+/* DEBUG */
 
 .debug-box{
   margin-top:20px;
@@ -72,6 +122,9 @@ button:hover{
   overflow:auto;
   white-space:pre-wrap;
 }
+
+
+/* DISCLAIMER */
 
 .disclaimer{
   margin-top:40px;
@@ -91,10 +144,27 @@ button:hover{
   color:#ffcc00;
 }
 
+
+/* MOBILE */
+
 @media(max-width:768px){
+
+  body{
+    padding:10px;
+  }
 
   .video-js{
     height:240px;
+  }
+
+  #languageSelect{
+    width:90%;
+    max-width:300px;
+  }
+
+  button{
+    width:90%;
+    max-width:300px;
   }
 
 }
