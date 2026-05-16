@@ -27,8 +27,11 @@ new Audio();
 audioPlayer.crossOrigin =
 "anonymous";
 
+audioPlayer.preload =
+"auto";
 
-// INIT VIDEO PLAYER
+
+// VIDEO PLAYER
 
 const player = videojs(
   'videoPlayer',
@@ -44,7 +47,7 @@ const player = videojs(
 
 // AUDIO STORAGE
 
-let audioLinks = {};
+let audioLinks = [];
 
 
 // START STREAM
@@ -57,43 +60,37 @@ function startStreaming(){
   const link =
   params.get("link");
 
-  // DYNAMIC AUDIO LINKS
+  // 🔥 GET AUDIOS ARRAY
 
-  const telugu =
-  params.get("telugu");
+  const audiosRaw =
+  params.get("audios");
 
-  const hindi =
-  params.get("hindi");
+  try{
 
-  const tamil =
-  params.get("tamil");
+    audioLinks =
+    JSON.parse(
+      decodeURIComponent(
+        audiosRaw || "[]"
+      )
+    );
 
-  const english =
-  params.get("english");
-
-
-  // BUILD AUDIO OBJECT
-
-  if(telugu){
-    audioLinks.telugu = telugu;
   }
 
-  if(hindi){
-    audioLinks.hindi = hindi;
-  }
+  catch(error){
 
-  if(tamil){
-    audioLinks.tamil = tamil;
-  }
+    logDebug(
+      "Audio parse failed"
+    );
 
-  if(english){
-    audioLinks.english = english;
+    audioLinks = [];
   }
 
 
   if(!link){
 
-    alert("No video link found ❌");
+    alert(
+      "No video link found ❌"
+    );
 
     return;
   }
@@ -103,10 +100,18 @@ function startStreaming(){
   statusText.innerText =
   "Loading stream...";
 
-  logDebug("Loading stream...");
-  logDebug("URL received.");
+  logDebug(
+    "Loading stream..."
+  );
 
-  let type = "video/mp4";
+  logDebug(
+    "URL received."
+  );
+
+  // VIDEO TYPE
+
+  let type =
+  "video/mp4";
 
   if(link.includes(".m3u8")){
 
@@ -127,41 +132,49 @@ function startStreaming(){
   }
 
   logDebug(
-    "Detected type: " + type
+    "Detected type: " +
+    type
   );
 
+  // LOAD VIDEO
+
   player.src({
+
     src:link,
     type:type
+
   });
+
+  // PLAYER READY
 
   player.ready(()=>{
 
     statusText.innerText =
     "Video loaded ✅";
 
-    logDebug("Player ready.");
+    logDebug(
+      "Player ready."
+    );
 
     inspectTracks();
+
+    buildLanguageSelector();
 
     setupSync();
 
     // AUTO LOAD FIRST AUDIO
 
-    const firstLanguage =
-    Object.keys(audioLinks)[0];
+    if(audioLinks.length > 0){
 
-    if(firstLanguage){
-
-      loadAudio(firstLanguage);
-
-      logDebug(
-        "Default audio: " +
-        firstLanguage
+      loadAudio(
+        audioLinks[0]
       );
+
     }
 
   });
+
+  // ERROR
 
   player.on('error',()=>{
 
@@ -172,9 +185,45 @@ function startStreaming(){
     "⚠ Video failed";
 
     logDebug(
+
       "Player Error: " +
+
       JSON.stringify(error)
+
     );
+
+  });
+
+}
+
+
+// BUILD LANGUAGE SELECTOR
+
+function buildLanguageSelector(){
+
+  if(!languageSelect)
+  return;
+
+  languageSelect.innerHTML =
+  "";
+
+  audioLinks.forEach(audio=>{
+
+    const option =
+    document.createElement(
+      "option"
+    );
+
+    option.value =
+    audio.url;
+
+    option.textContent =
+    audio.lang;
+
+    languageSelect.appendChild(
+      option
+    );
+
   });
 
 }
@@ -182,26 +231,16 @@ function startStreaming(){
 
 // LOAD AUDIO
 
-function loadAudio(language){
+function loadAudio(audioObj){
 
-  const audioUrl =
-  audioLinks[language];
-
-  if(!audioUrl){
-
-    logDebug(
-      "Missing audio for: " +
-      language
-    );
-
-    return;
-  }
+  if(!audioObj)
+  return;
 
   const currentTime =
   player.currentTime();
 
   audioPlayer.src =
-  audioUrl;
+  audioObj.url;
 
   audioPlayer.currentTime =
   currentTime;
@@ -209,9 +248,13 @@ function loadAudio(language){
   audioPlayer.play();
 
   logDebug(
+
     "Audio changed to: " +
-    language
+
+    audioObj.lang
+
   );
+
 }
 
 
@@ -220,14 +263,32 @@ function loadAudio(language){
 if(languageSelect){
 
   languageSelect.addEventListener(
-    "change",
-    (e)=>{
 
-      loadAudio(
-        e.target.value
+    "change",
+
+    ()=>{
+
+      const selected =
+      audioLinks.find(
+
+        a =>
+        a.url ===
+        languageSelect.value
+
       );
+
+      if(selected){
+
+        loadAudio(
+          selected
+        );
+
+      }
+
     }
+
   );
+
 }
 
 
@@ -244,6 +305,7 @@ function setupSync(){
     logDebug(
       "Playback started."
     );
+
   });
 
   // PAUSE
@@ -255,6 +317,7 @@ function setupSync(){
     logDebug(
       "Playback paused."
     );
+
   });
 
   // SEEK
@@ -267,9 +330,10 @@ function setupSync(){
     logDebug(
       "Syncing seek..."
     );
+
   });
 
-  // WAITING
+  // BUFFER
 
   player.on('waiting',()=>{
 
@@ -278,6 +342,7 @@ function setupSync(){
     logDebug(
       "Buffering..."
     );
+
   });
 
   // PLAYING
@@ -289,6 +354,7 @@ function setupSync(){
     logDebug(
       "Playing resumed."
     );
+
   });
 
   // AUTO RESYNC
@@ -297,8 +363,11 @@ function setupSync(){
 
     const diff =
     Math.abs(
+
       player.currentTime() -
+
       audioPlayer.currentTime
+
     );
 
     if(diff > 0.5){
@@ -309,6 +378,7 @@ function setupSync(){
       logDebug(
         "Audio resynced."
       );
+
     }
 
   },1000);
@@ -316,7 +386,7 @@ function setupSync(){
 }
 
 
-// TRACK INSPECTION
+// TRACK CHECK
 
 function inspectTracks(){
 
@@ -326,16 +396,23 @@ function inspectTracks(){
     player.textTracks();
 
     logDebug(
+
       "TextTracks object: " +
+
       (!!textTracks)
+
     );
 
     if(textTracks){
 
       logDebug(
+
         "Subtitle track count: " +
+
         textTracks.length
+
       );
+
     }
 
   }
@@ -343,9 +420,13 @@ function inspectTracks(){
   catch(error){
 
     logDebug(
+
       "Track inspection failed: " +
+
       error.message
+
     );
+
   }
 
 }
@@ -360,6 +441,7 @@ player.on('loadedmetadata',()=>{
   );
 
   inspectTracks();
+
 });
 
 
@@ -370,4 +452,5 @@ player.on('dispose',()=>{
   logDebug(
     "Player disposed."
   );
+
 });
