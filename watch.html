@@ -1,143 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Streaming Player</title>
-
-  <!-- VIDEO.JS -->
-
-  <link
-    href="https://vjs.zencdn.net/8.10.0/video-js.css"
-    rel="stylesheet"
-  >
-
-  <!-- CSS -->
-
-  <link
-    rel="stylesheet"
-    href="watch.css"
-  >
-
+  <title>Watch</title>
 </head>
 
-<body>
+<body style="background:black; text-align:center; color:white;">
 
-  <h2>🎬 Streaming Player</h2>
+<h2>🎬 Player</h2>
 
-  <!-- TOP BUTTONS -->
+<button onclick="history.back()" style="padding:10px;">
+  ⬅ Back
+</button>
 
-  <div class="top-buttons">
+<br><br>
 
-    <button onclick="history.back()">
-      ⬅ Back
-    </button>
+<button onclick="start()" style="padding:15px; font-size:16px;">
+  ▶ Start Streaming
+</button>
 
-    <button onclick="startStreaming()">
-      ▶ Start Streaming
-    </button>
+<br><br>
 
-  </div>
+<video id="player" controls width="800" style="display:none;"></video>
 
+<script>
+function start(){
+  const params = new URLSearchParams(location.search);
+  const link = params.get("link");
 
-  <!-- LANGUAGE SELECTOR -->
+  if(!link){
+    alert("No video link found ❌");
+    return;
+  }
 
-  <div class="language-wrapper">
+  const player = document.getElementById("player");
+  player.style.display = "block";
+  player.src = link;
+}
 
-    <select id="languageSelect">
-
-      <option>
-        Loading languages...
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <!-- PLAYER -->
-
-  <div class="player-wrapper">
-
-    <div class="video-container">
-
-      <video
-        id="videoPlayer"
-        class="video-js vjs-default-skin vjs-big-play-centered"
-        controls
-        preload="auto"
-        playsinline
-      ></video>
-
-    </div>
-
-  </div>
-
-
-  <!-- STATUS -->
-
-  <div
-    class="status"
-    id="status"
-  >
-
-    Waiting for stream...
-
-  </div>
-
-
-  <!-- DEBUG -->
-
-  <div
-    class="debug-box"
-    id="debugBox"
-  >
-
-    Debug logs will appear here...
-
-  </div>
-
-
-  <!-- DISCLAIMER -->
-
-  <div class="disclaimer">
-
-    <h3>
-      ⚠ Disclaimer
-    </h3>
-
-    <p>
-
-      This website does not host,
-      upload, store, or distribute
-      any media files.
-
-    </p>
-
-    <p>
-
-      All content is streamed from
-      third-party sources.
-
-    </p>
-
-  </div>
-
-
-  <!-- VIDEO.JS -->
-
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-
-
-  <!-- PLAYER JS -->
-
-  <script src="watch.js"></script>
+// error handling
+document.getElementById("player").onerror = () => {
+  alert("⚠ Video failed to load");
+};
+</script>
 
 </body>
 </html>
