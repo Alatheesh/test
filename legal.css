@@ -1,0 +1,170 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#020202;
+  color:white;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  overflow:hidden;
+  position:relative;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding:20px;
+}
+
+/* BACKGROUND */
+
+.legal-bg{
+  position:fixed;
+  inset:0;
+
+  background:
+  radial-gradient(circle at top left,
+  rgba(0,123,255,0.15),
+  transparent 35%),
+
+  radial-gradient(circle at bottom right,
+  rgba(255,0,140,0.15),
+  transparent 35%),
+
+  linear-gradient(
+    135deg,
+    #020202,
+    #080808
+  );
+
+  z-index:-2;
+}
+
+/* CONTAINER */
+
+.legal-container{
+  width:100%;
+  max-width:900px;
+
+  background:
+  rgba(255,255,255,0.05);
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  border-radius:28px;
+
+  backdrop-filter:blur(16px);
+
+  padding:50px;
+
+  text-align:center;
+
+  line-height:2;
+
+  animation:
+  fadeUp 1s ease;
+
+  box-shadow:
+  0 0 60px rgba(0,0,0,0.5);
+}
+
+/* TITLE */
+
+h1{
+  font-size:48px;
+
+  margin-bottom:25px;
+
+  background:
+  linear-gradient(
+    90deg,
+    #00bfff,
+    #ff4ecd
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* TEXT */
+
+p{
+  margin-top:18px;
+  color:#cfcfcf;
+  font-size:16px;
+}
+
+/* BUTTON */
+
+.legal-btn{
+  display:inline-block;
+
+  margin-top:35px;
+
+  padding:14px 22px;
+
+  border-radius:14px;
+
+  background:
+  rgba(0,123,255,0.18);
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter:blur(10px);
+
+  color:white;
+
+  text-decoration:none;
+
+  transition:0.3s;
+}
+
+.legal-btn:hover{
+  background:#007bff;
+
+  transform:
+  translateY(-2px)
+  scale(1.03);
+
+  box-shadow:
+  0 0 20px rgba(0,123,255,0.4);
+}
+
+/* ANIMATION */
+
+@keyframes fadeUp{
+
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+  .legal-container{
+    padding:30px;
+  }
+
+  h1{
+    font-size:34px;
+  }
+
+  p{
+    font-size:14px;
+  }
+
+}
