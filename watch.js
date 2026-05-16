@@ -1,22 +1,3 @@
-const statusText=
-document.getElementById("status");
-
-const debugBox=
-document.getElementById("debugBox");
-
-// DEBUG LOGGER
-
-function logDebug(text){
-
-  console.log(text);
-
-  debugBox.innerHTML +=
-  "\n" + text;
-
-}
-
-// VIDEO JS PLAYER
-
 const player=
 videojs(
   'videoPlayer',
@@ -29,7 +10,10 @@ videojs(
   }
 );
 
-// START STREAM
+const loadingScreen=
+document.getElementById(
+  "loadingScreen"
+);
 
 function startStreaming(){
 
@@ -44,27 +28,12 @@ function startStreaming(){
   if(!link){
 
     alert(
-      "No video link found ❌"
+      "No stream link found"
     );
 
     return;
 
   }
-
-  debugBox.innerHTML="";
-
-  statusText.innerText=
-  "Loading stream...";
-
-  logDebug(
-    "Loading stream..."
-  );
-
-  logDebug(
-    "VIDEO LINK:"
-  );
-
-  logDebug(link);
 
   let type=
   "video/mp4";
@@ -90,11 +59,6 @@ function startStreaming(){
 
   }
 
-  logDebug(
-    "Detected type: " +
-    type
-  );
-
   player.src({
 
     src:link,
@@ -102,69 +66,95 @@ function startStreaming(){
 
   });
 
-  player.ready(()=>{
+}
 
-    statusText.innerText=
-    "Video loaded ✅";
+function skipForward(){
 
-    logDebug(
-      "Player ready."
-    );
-
-  });
-
-  player.on('error',()=>{
-
-    const error=
-    player.error();
-
-    statusText.innerText=
-    "⚠ Video failed";
-
-    logDebug(
-      "Player Error: " +
-      JSON.stringify(error)
-    );
-
-  });
+  player.currentTime(
+    player.currentTime() + 10
+  );
 
 }
 
-// EVENTS
+function skipBackward(){
+
+  player.currentTime(
+    player.currentTime() - 10
+  );
+
+}
+
+function togglePlay(){
+
+  if(player.paused()){
+
+    player.play();
+
+  }
+
+  else{
+
+    player.pause();
+
+  }
+
+}
+
+function toggleFullscreen(){
+
+  if(player.requestFullscreen){
+
+    player.requestFullscreen();
+
+  }
+
+}
+
+document
+.getElementById("speedControl")
+.addEventListener(
+  "change",
+  (e)=>{
+
+    player.playbackRate(
+      Number(e.target.value)
+    );
+
+  }
+);
+
+function copyStreamLink(){
+
+  navigator.clipboard.writeText(
+    location.href
+  );
+
+  alert(
+    "Stream link copied"
+  );
+
+}
+
+function openExternalPlayer(){
+
+  const params=
+  new URLSearchParams(
+    location.search
+  );
+
+  const link=
+  params.get("link");
+
+  window.open(link);
+
+}
 
 player.on('loadedmetadata',()=>{
 
-  logDebug(
-    "loadedmetadata fired."
-  );
+  loadingScreen.style.display=
+  "none";
 
 });
-
-player.on('play',()=>{
-
-  logDebug(
-    "Playback started."
-  );
-
-});
-
-player.on('waiting',()=>{
-
-  logDebug(
-    "Buffering..."
-  );
-
-});
-
-player.on('dispose',()=>{
-
-  logDebug(
-    "Player disposed."
-  );
-
-});
-
-// AUTO START
 
 window.addEventListener(
   "DOMContentLoaded",
