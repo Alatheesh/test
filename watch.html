@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Advanced Streaming Player</title>
 
-  <link rel="stylesheet"
-  href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <title>Shaka Streaming Player</title>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+  <!-- SHAKA PLAYER -->
+
+  <script
+  src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js"
+  crossorigin="anonymous"></script>
+
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css"
+  crossorigin="anonymous"/>
 
   <style>
 
@@ -40,21 +54,6 @@
       opacity:0.9;
     }
 
-    .controls-box{
-      margin-top:20px;
-      margin-bottom:20px;
-    }
-
-    select{
-      padding:10px;
-      border-radius:8px;
-      border:none;
-      background:#222;
-      color:white;
-      margin-left:10px;
-      font-size:15px;
-    }
-
     .player-wrapper{
       width:100%;
       display:flex;
@@ -62,16 +61,22 @@
       margin-top:20px;
     }
 
-    video{
+    .shaka-video-container{
       width:95%;
       max-width:1100px;
       border-radius:12px;
+      overflow:hidden;
+      background:black;
+    }
+
+    video{
+      width:100%;
       background:black;
     }
 
     .status{
-      margin-top:15px;
-      color:#aaa;
+      margin-top:20px;
+      color:#00ff88;
       font-size:14px;
       line-height:1.6;
     }
@@ -82,7 +87,7 @@
       border:1px solid #333;
       border-radius:10px;
       padding:15px;
-      max-width:900px;
+      max-width:1000px;
       margin-left:auto;
       margin-right:auto;
       text-align:left;
@@ -111,11 +116,12 @@
     }
 
   </style>
+
 </head>
 
 <body>
 
-<h2>🎬 Advanced Streaming Player</h2>
+<h2>🎬 Shaka Streaming Player</h2>
 
 <div class="top-buttons">
 
@@ -129,38 +135,32 @@
 
 </div>
 
-<div class="controls-box">
-
-  🔊 Audio:
-  <select id="audioSelect">
-    <option>Loading...</option>
-  </select>
-
-  &nbsp;&nbsp;
-
-  💬 Subtitles:
-  <select id="subtitleSelect">
-    <option value="-1">Off</option>
-  </select>
-
-</div>
-
 <div class="player-wrapper">
 
-  <video
-    id="player"
-    controls
-    playsinline>
-  </video>
+  <div
+    class="shaka-video-container"
+    data-shaka-player>
+
+    <video
+      id="video"
+      playsinline
+      controls>
+    </video>
+
+  </div>
 
 </div>
 
 <div class="status" id="status">
+
   Waiting for stream...
+
 </div>
 
 <div class="debug-box" id="debugBox">
-Debug logs will appear here...
+
+  Debug logs will appear here...
+
 </div>
 
 <div class="disclaimer">
@@ -177,30 +177,22 @@ Debug logs will appear here...
 
   <p>
     We do not claim ownership of any content displayed through this player.
-    If you are a copyright owner and believe any content violates your rights,
-    please contact the original hosting provider.
   </p>
 
 </div>
 
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
 <script>
 
 const video =
-document.getElementById("player");
-
-const audioSelect =
-document.getElementById("audioSelect");
-
-const subtitleSelect =
-document.getElementById("subtitleSelect");
+document.getElementById("video");
 
 const statusText =
 document.getElementById("status");
 
 const debugBox =
 document.getElementById("debugBox");
+
+let player;
 
 
 // DEBUG LOGGER
@@ -214,15 +206,38 @@ function logDebug(text){
 }
 
 
-// INIT PLAYER
+// INIT SHAKA
 
-const player =
-new Plyr('#player');
+async function initPlayer(){
+
+  shaka.polyfill.installAll();
+
+  if(!shaka.Player.isBrowserSupported()){
+
+    logDebug(
+      "Browser not supported ❌"
+    );
+
+    return;
+  }
+
+  player =
+  new shaka.Player(video);
+
+  player.addEventListener(
+    'error',
+    onErrorEvent
+  );
+
+  logDebug(
+    "Shaka Player initialized ✅"
+  );
+}
 
 
 // START STREAMING
 
-function startStreaming(){
+async function startStreaming(){
 
   const params =
   new URLSearchParams(location.search);
@@ -243,217 +258,111 @@ function startStreaming(){
   "Loading stream...";
 
   logDebug("Loading stream...");
-  logDebug("Video URL received.");
+  logDebug("URL received.");
 
-  video.src = link;
+  try{
 
-  setTimeout(loadTracks,4000);
+    await player.load(link);
+
+    statusText.innerText =
+    "Video loaded ✅";
+
+    logDebug(
+      "Stream loaded successfully."
+    );
+
+    inspectTracks();
+
+  }
+
+  catch(error){
+
+    onError(error);
+  }
 }
 
 
-// LOAD TRACKS
+// INSPECT TRACKS
 
-function loadTracks(){
+function inspectTracks(){
 
-  logDebug("Checking tracks...");
+  const audioTracks =
+  player.getAudioLanguages();
+
+  const textTracks =
+  player.getTextLanguages();
 
   logDebug(
-    "audioTracks support: " +
-    (!!video.audioTracks)
+    "Audio Languages: " +
+    JSON.stringify(audioTracks)
   );
 
   logDebug(
-    "textTracks support: " +
-    (!!video.textTracks)
+    "Subtitle Languages: " +
+    JSON.stringify(textTracks)
   );
 
-  console.log("VIDEO:", video);
+  const variants =
+  player.getVariantTracks();
 
-  console.log("audioTracks:",
-  video.audioTracks);
+  logDebug(
+    "Variant Tracks Count: " +
+    variants.length
+  );
 
-  console.log("textTracks:",
-  video.textTracks);
+  console.log(
+    "Variants:",
+    variants
+  );
 
+  if(variants.length > 0){
 
-  // AUDIO TRACKS
-
-  if(video.audioTracks){
-
-    logDebug(
-      "Audio track length: " +
-      video.audioTracks.length
-    );
-
-    if(video.audioTracks.length > 0){
-
-      audioSelect.innerHTML = "";
-
-      for(let i=0;
-          i<video.audioTracks.length;
-          i++){
-
-        const track =
-        video.audioTracks[i];
-
-        logDebug(
-          "Track " + i +
-          ": " +
-          JSON.stringify(track)
-        );
-
-        const option =
-        document.createElement("option");
-
-        option.value = i;
-
-        option.textContent =
-          track.label ||
-          track.language ||
-          ("Track " + (i+1));
-
-        audioSelect.appendChild(option);
-      }
-
-      statusText.innerText =
-      "Audio tracks detected ✅";
+    variants.forEach((v,i)=>{
 
       logDebug(
-        "Switchable audio tracks FOUND."
+        "Track " + i +
+        " | language: " +
+        v.language +
+        " | audioId: " +
+        v.audioId
       );
-
-    } else {
-
-      audioSelect.innerHTML =
-      "<option>No audio tracks found</option>";
-
-      statusText.innerText =
-      "No switchable audio tracks detected ⚠";
-
-      logDebug(
-        "audioTracks exists but length = 0"
-      );
-    }
+    });
 
   } else {
 
-    audioSelect.innerHTML =
-    "<option>audioTracks unsupported</option>";
-
     logDebug(
-      "Browser does NOT support audioTracks API."
+      "No variant tracks found ⚠"
     );
-  }
-
-
-  // SUBTITLE TRACKS
-
-  if(video.textTracks){
-
-    logDebug(
-      "Subtitle track length: " +
-      video.textTracks.length
-    );
-
-    if(video.textTracks.length > 0){
-
-      for(let i=0;
-          i<video.textTracks.length;
-          i++){
-
-        const track =
-        video.textTracks[i];
-
-        const option =
-        document.createElement("option");
-
-        option.value = i;
-
-        option.textContent =
-          track.label ||
-          track.language ||
-          ("Subtitle " + (i+1));
-
-        subtitleSelect.appendChild(option);
-      }
-
-      logDebug(
-        "Subtitle tracks detected."
-      );
-    }
   }
 }
 
 
-// AUDIO SWITCHING
+// ERROR HANDLING
 
-audioSelect.addEventListener("change",()=>{
+function onErrorEvent(event){
 
-  const tracks =
-  video.audioTracks;
+  onError(event.detail);
+}
 
-  if(!tracks) return;
+function onError(error){
 
-  logDebug(
-    "Switching audio to track: " +
-    audioSelect.value
-  );
-
-  for(let i=0;i<tracks.length;i++){
-
-    tracks[i].enabled =
-      (i == audioSelect.value);
-  }
-});
-
-
-// SUBTITLE SWITCHING
-
-subtitleSelect.addEventListener("change",()=>{
-
-  const tracks =
-  video.textTracks;
-
-  logDebug(
-    "Switching subtitle track."
-  );
-
-  for(let i=0;i<tracks.length;i++){
-
-    tracks[i].mode =
-      (i == subtitleSelect.value)
-      ? "showing"
-      : "hidden";
-  }
-});
-
-
-// EVENTS
-
-video.addEventListener("loadedmetadata",()=>{
+  console.error(error);
 
   statusText.innerText =
-  "Video loaded ✅";
+  "⚠ Video failed";
 
   logDebug(
-    "loadedmetadata fired."
+    "Error: " + error.code
   );
-
-  loadTracks();
-});
+}
 
 
-video.onerror = ()=>{
+// INIT
 
-  statusText.innerText =
-  "⚠ Failed to load video";
-
-  logDebug(
-    "Video failed to load."
-  );
-
-  alert("Video failed to load ❌");
-};
+document.addEventListener(
+  'DOMContentLoaded',
+  initPlayer
+);
 
 </script>
 
