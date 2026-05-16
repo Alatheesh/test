@@ -11,13 +11,15 @@
 
   <title>Streaming Player</title>
 
-  <!-- Video.js -->
+  <!-- VIDEO.JS -->
+
   <link
     href="https://vjs.zencdn.net/8.10.0/video-js.css"
     rel="stylesheet"
   >
 
-  <!-- YOUR CSS -->
+  <!-- CSS -->
+
   <link
     rel="stylesheet"
     href="watch.css"
@@ -28,6 +30,8 @@
 <body>
 
   <h2>🎬 Streaming Player</h2>
+
+  <!-- TOP BUTTONS -->
 
   <div class="top-buttons">
 
@@ -40,6 +44,24 @@
     </button>
 
   </div>
+
+
+  <!-- LANGUAGE SELECTOR -->
+
+  <div class="language-wrapper">
+
+    <select id="languageSelect">
+
+      <option>
+        Loading languages...
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- PLAYER -->
 
   <div class="player-wrapper">
 
@@ -57,34 +79,64 @@
 
   </div>
 
-  <div class="status" id="status">
+
+  <!-- STATUS -->
+
+  <div
+    class="status"
+    id="status"
+  >
+
     Waiting for stream...
+
   </div>
 
-  <div class="debug-box" id="debugBox">
+
+  <!-- DEBUG -->
+
+  <div
+    class="debug-box"
+    id="debugBox"
+  >
+
     Debug logs will appear here...
+
   </div>
+
+
+  <!-- DISCLAIMER -->
 
   <div class="disclaimer">
 
-    <h3>⚠ Disclaimer</h3>
+    <h3>
+      ⚠ Disclaimer
+    </h3>
 
     <p>
-      This website does not host, upload,
-      store, or distribute any media files.
+
+      This website does not host,
+      upload, store, or distribute
+      any media files.
+
     </p>
 
     <p>
+
       All content is streamed from
       third-party sources.
+
     </p>
 
   </div>
 
-  <!-- Video.js -->
+
+  <!-- VIDEO.JS -->
+
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
-  <!-- YOUR JS -->
+
+  <!-- PLAYER JS -->
+
   <script src="watch.js"></script>
 
 </body>
