@@ -122,9 +122,35 @@ function startStreaming(){
     "Loading stream..."
   );
 
+  // DEBUG LINKS
+
   logDebug(
-    "URL received."
+    "VIDEO LINK:"
   );
+
+  logDebug(link);
+
+  logDebug(
+    "RAW AUDIOS:"
+  );
+
+  logDebug(audiosRaw);
+
+  logDebug(
+    "PARSED AUDIOS:"
+  );
+
+  audioLinks.forEach(audio=>{
+
+    logDebug(
+
+      audio.lang +
+      " → " +
+      audio.url
+
+    );
+
+  });
 
   // VIDEO TYPE
 
@@ -167,8 +193,7 @@ function startStreaming(){
 
   player.ready(()=>{
 
-    // IMPORTANT
-    // MUTE ORIGINAL VIDEO AUDIO
+    // MUTE ORIGINAL AUDIO
 
     player.muted(true);
 
@@ -295,6 +320,10 @@ async function loadAudio(audioObj){
 
         audioObj.lang
 
+      );
+
+      logDebug(
+        audioObj.url
       );
 
     };
