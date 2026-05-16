@@ -1,47 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Watch</title>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>Streaming Player</title>
+
+<!-- VIDEO JS -->
+<link
+href="https://vjs.zencdn.net/8.10.0/video-js.css"
+rel="stylesheet"
+/>
+
+<!-- CSS -->
+<link
+rel="stylesheet"
+href="watch.css"
+/>
+
 </head>
 
-<body style="background:black; text-align:center; color:white;">
+<body>
 
-<h2>🎬 Player</h2>
+<div class="bg-overlay"></div>
 
-<button onclick="history.back()" style="padding:10px;">
-  ⬅ Back
+<button
+class="back-btn"
+onclick="history.back()"
+>
+← Back
 </button>
 
-<br><br>
+<div class="main-container">
 
-<button onclick="start()" style="padding:15px; font-size:16px;">
-  ▶ Start Streaming
-</button>
+<h1 class="title">
+🎬 Streaming Player
+</h1>
 
-<br><br>
+<div class="player-wrapper">
 
-<video id="player" controls width="800" style="display:none;"></video>
+<video
+id="videoPlayer"
+class="video-js vjs-default-skin vjs-big-play-centered"
+controls
+preload="auto"
+playsinline
+></video>
 
-<script>
-function start(){
-  const params = new URLSearchParams(location.search);
-  const link = params.get("link");
+</div>
 
-  if(!link){
-    alert("No video link found ❌");
-    return;
-  }
+<div
+class="status"
+id="status"
+>
+Preparing stream...
+</div>
 
-  const player = document.getElementById("player");
-  player.style.display = "block";
-  player.src = link;
-}
+<div
+class="debug-box"
+id="debugBox"
+>
+Logs will appear here...
+</div>
 
-// error handling
-document.getElementById("player").onerror = () => {
-  alert("⚠ Video failed to load");
-};
-</script>
+</div>
+
+<div class="disclaimer">
+
+<h3>
+⚠ Disclaimer
+</h3>
+
+<p>
+This website does not host,
+upload, store, or distribute
+any media files.
+</p>
+
+<p>
+All content is streamed from
+third-party sources.
+</p>
+
+</div>
+
+<!-- VIDEO JS -->
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+<!-- JS -->
+<script src="watch.js"></script>
 
 </body>
 </html>
