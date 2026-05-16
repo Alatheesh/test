@@ -10,15 +10,13 @@ name="viewport"
 content="width=device-width, initial-scale=1.0"
 >
 
-<title>Streaming Player</title>
+<title>Premium Streaming</title>
 
-<!-- VIDEO JS -->
 <link
 href="https://vjs.zencdn.net/8.10.0/video-js.css"
 rel="stylesheet"
 />
 
-<!-- CSS -->
 <link
 rel="stylesheet"
 href="watch.css"
@@ -28,22 +26,79 @@ href="watch.css"
 
 <body>
 
+<!-- BACKGROUND -->
+
 <div class="bg-overlay"></div>
 
+<div class="particles"></div>
+
+<!-- TOP BAR -->
+
+<header class="top-bar">
+
+<div class="logo">
+✨ NTM Stream
+</div>
+
+<div class="top-actions">
+
 <button
-class="back-btn"
+class="top-btn"
+onclick="copyStreamLink()"
+>
+🔗 Copy Stream
+</button>
+
+<button
+class="top-btn"
+onclick="openExternalPlayer()"
+>
+▶ Open in VLC
+</button>
+
+<button
+class="top-btn"
 onclick="history.back()"
 >
 ← Back
 </button>
 
-<div class="main-container">
+</div>
 
-<h1 class="title">
-🎬 Streaming Player
+</header>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<h1>
+Premium Streaming Experience
 </h1>
 
-<div class="player-wrapper">
+<p>
+Ultra smooth playback • Cinematic interface • Premium streaming
+</p>
+
+</section>
+
+<!-- PLAYER -->
+
+<section class="player-section">
+
+<div class="player-card">
+
+<div
+class="loading-screen"
+id="loadingScreen"
+>
+
+<div class="loader-ring"></div>
+
+<p>
+Preparing Premium Stream...
+</p>
+
+</div>
 
 <video
 id="videoPlayer"
@@ -53,47 +108,110 @@ preload="auto"
 playsinline
 ></video>
 
-</div>
+<div class="premium-controls">
 
-<div
-class="status"
-id="status"
+<button
+onclick="skipBackward()"
+class="premium-btn"
 >
-Preparing stream...
-</div>
+⏪ 10s
+</button>
 
-<div
-class="debug-box"
-id="debugBox"
+<button
+onclick="togglePlay()"
+class="premium-btn"
 >
-Logs will appear here...
-</div>
+⏯ Play
+</button>
+
+<button
+onclick="skipForward()"
+class="premium-btn"
+>
+10s ⏩
+</button>
+
+<button
+onclick="toggleFullscreen()"
+class="premium-btn"
+>
+⛶ Fullscreen
+</button>
+
+<select
+id="speedControl"
+class="speed-select"
+>
+
+<option value="0.5">
+0.5x
+</option>
+
+<option value="1" selected>
+1x
+</option>
+
+<option value="1.5">
+1.5x
+</option>
+
+<option value="2">
+2x
+</option>
+
+</select>
 
 </div>
 
-<div class="disclaimer">
+</div>
 
-<h3>
-⚠ Disclaimer
-</h3>
+</section>
+
+<!-- DISCLAIMER -->
+
+<section class="premium-disclaimer">
+
+<div class="disclaimer-card">
+
+<h2>
+⚠ Streaming Disclaimer
+</h2>
 
 <p>
-This website does not host,
-upload, store, or distribute
-any media files.
+This platform operates solely as a search
+and indexing interface for publicly available
+third-party content across the internet.
 </p>
 
 <p>
-All content is streamed from
-third-party sources.
+NTM Stream does not host, upload,
+store, archive, distribute, modify,
+or own any video or media files.
+</p>
+
+<p>
+All streaming links displayed on this
+website are automatically embedded from
+external sources beyond our control.
+</p>
+
+<p>
+Users are responsible for ensuring that
+their access to content complies with
+their local laws and regulations.
+</p>
+
+<p class="accept-line">
+By continuing to use this website,
+you acknowledge and agree to this disclaimer.
 </p>
 
 </div>
 
-<!-- VIDEO JS -->
+</section>
+
 <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
-<!-- JS -->
 <script src="watch.js"></script>
 
 </body>
