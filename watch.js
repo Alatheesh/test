@@ -15,6 +15,8 @@ document.getElementById(
   "loadingScreen"
 );
 
+// START STREAMING
+
 function startStreaming(){
 
   const params=
@@ -68,6 +70,8 @@ function startStreaming(){
 
 }
 
+// SKIP FORWARD
+
 function skipForward(){
 
   player.currentTime(
@@ -76,6 +80,8 @@ function skipForward(){
 
 }
 
+// SKIP BACKWARD
+
 function skipBackward(){
 
   player.currentTime(
@@ -83,6 +89,8 @@ function skipBackward(){
   );
 
 }
+
+// PLAY / PAUSE
 
 function togglePlay(){
 
@@ -100,15 +108,24 @@ function togglePlay(){
 
 }
 
+// FULLSCREEN
+
 function toggleFullscreen(){
 
-  if(player.requestFullscreen){
+  const wrapper=
+  document.querySelector(
+    ".player-card"
+  );
 
-    player.requestFullscreen();
+  if(wrapper.requestFullscreen){
+
+    wrapper.requestFullscreen();
 
   }
 
 }
+
+// PLAYBACK SPEED
 
 document
 .getElementById("speedControl")
@@ -123,17 +140,21 @@ document
   }
 );
 
+// COPY STREAM LINK
+
 function copyStreamLink(){
 
   navigator.clipboard.writeText(
     location.href
   );
 
-  alert(
+  showToast(
     "Stream link copied"
   );
 
 }
+
+// OPEN VLC / MX
 
 function openExternalPlayer(){
 
@@ -149,6 +170,8 @@ function openExternalPlayer(){
 
 }
 
+// HIDE LOADING
+
 player.on('loadedmetadata',()=>{
 
   loadingScreen.style.display=
@@ -156,7 +179,239 @@ player.on('loadedmetadata',()=>{
 
 });
 
+// AUTO START
+
 window.addEventListener(
   "DOMContentLoaded",
   startStreaming
 );
+
+// DOUBLE TAP SEEK
+
+const leftZone=
+document.getElementById(
+  "leftZone"
+);
+
+const rightZone=
+document.getElementById(
+  "rightZone"
+);
+
+const leftAnim=
+document.getElementById(
+  "leftAnim"
+);
+
+const rightAnim=
+document.getElementById(
+  "rightAnim"
+);
+
+let lastLeftTap=0;
+let lastRightTap=0;
+
+// MOBILE LEFT
+
+leftZone.addEventListener(
+  "touchend",
+  ()=>{
+
+    const now=
+    Date.now();
+
+    if(now-lastLeftTap < 300){
+
+      skipBackward();
+
+      showTapAnimation(
+        leftAnim
+      );
+
+    }
+
+    lastLeftTap=now;
+
+  }
+);
+
+// MOBILE RIGHT
+
+rightZone.addEventListener(
+  "touchend",
+  ()=>{
+
+    const now=
+    Date.now();
+
+    if(now-lastRightTap < 300){
+
+      skipForward();
+
+      showTapAnimation(
+        rightAnim
+      );
+
+    }
+
+    lastRightTap=now;
+
+  }
+);
+
+// PC DOUBLE CLICK
+
+leftZone.addEventListener(
+  "dblclick",
+  ()=>{
+
+    skipBackward();
+
+    showTapAnimation(
+      leftAnim
+    );
+
+  }
+);
+
+rightZone.addEventListener(
+  "dblclick",
+  ()=>{
+
+    skipForward();
+
+    showTapAnimation(
+      rightAnim
+    );
+
+  }
+);
+
+// TAP ANIMATION
+
+function showTapAnimation(el){
+
+  el.classList.add(
+    "show"
+  );
+
+  setTimeout(()=>{
+
+    el.classList.remove(
+      "show"
+    );
+
+  },400);
+
+}
+
+// KEYBOARD SHORTCUTS
+
+document.addEventListener(
+  "keydown",
+  (e)=>{
+
+    // SPACE
+
+    if(e.code === "Space"){
+
+      e.preventDefault();
+
+      togglePlay();
+
+    }
+
+    // RIGHT
+
+    if(e.code === "ArrowRight"){
+
+      skipForward();
+
+      showTapAnimation(
+        rightAnim
+      );
+
+    }
+
+    // LEFT
+
+    if(e.code === "ArrowLeft"){
+
+      skipBackward();
+
+      showTapAnimation(
+        leftAnim
+      );
+
+    }
+
+    // FULLSCREEN
+
+    if(e.key.toLowerCase() === "f"){
+
+      toggleFullscreen();
+
+    }
+
+  }
+);
+
+// PREMIUM TOAST
+
+function showToast(text){
+
+  const toast=
+  document.createElement(
+    "div"
+  );
+
+  toast.innerText=
+  text;
+
+  toast.style.position=
+  "fixed";
+
+  toast.style.bottom=
+  "30px";
+
+  toast.style.left=
+  "50%";
+
+  toast.style.transform=
+  "translateX(-50%)";
+
+  toast.style.padding=
+  "14px 22px";
+
+  toast.style.borderRadius=
+  "14px";
+
+  toast.style.background=
+  "rgba(0,0,0,0.7)";
+
+  toast.style.backdropFilter=
+  "blur(10px)";
+
+  toast.style.color=
+  "white";
+
+  toast.style.zIndex=
+  "9999";
+
+  toast.style.fontSize=
+  "14px";
+
+  toast.style.boxShadow=
+  "0 0 20px rgba(0,0,0,0.5)";
+
+  document.body.appendChild(
+    toast
+  );
+
+  setTimeout(()=>{
+
+    toast.remove();
+
+  },2000);
+
+}
