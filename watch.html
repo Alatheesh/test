@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-  <title>Shaka Streaming Player</title>
 
   <meta charset="UTF-8">
 
   <meta name="viewport"
   content="width=device-width, initial-scale=1.0">
 
-  <!-- SHAKA PLAYER -->
+  <title>Video.js Streaming Player</title>
 
-  <script
-  src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js"
-  crossorigin="anonymous"></script>
+  <!-- VIDEO.JS CSS -->
 
   <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css"
-  crossorigin="anonymous"/>
+  href="https://vjs.zencdn.net/8.10.0/video-js.css"
+  rel="stylesheet"/>
 
   <style>
 
@@ -61,16 +56,16 @@
       margin-top:20px;
     }
 
-    .shaka-video-container{
+    .video-container{
       width:95%;
       max-width:1100px;
-      border-radius:12px;
-      overflow:hidden;
-      background:black;
     }
 
-    video{
+    .video-js{
       width:100%;
+      height:620px;
+      border-radius:12px;
+      overflow:hidden;
       background:black;
     }
 
@@ -115,13 +110,20 @@
       color:#ffcc00;
     }
 
+    @media(max-width:768px){
+
+      .video-js{
+        height:240px;
+      }
+    }
+
   </style>
 
 </head>
 
 <body>
 
-<h2>🎬 Shaka Streaming Player</h2>
+<h2>🎬 Video.js Streaming Player</h2>
 
 <div class="top-buttons">
 
@@ -137,14 +139,15 @@
 
 <div class="player-wrapper">
 
-  <div
-    class="shaka-video-container"
-    data-shaka-player>
+  <div class="video-container">
 
     <video
-      id="video"
-      playsinline
-      controls>
+      id="videoPlayer"
+      class="video-js vjs-default-skin vjs-big-play-centered"
+      controls
+      preload="auto"
+      playsinline>
+
     </video>
 
   </div>
@@ -181,18 +184,17 @@
 
 </div>
 
-<script>
+<!-- VIDEO.JS -->
 
-const video =
-document.getElementById("video");
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+<script>
 
 const statusText =
 document.getElementById("status");
 
 const debugBox =
 document.getElementById("debugBox");
-
-let player;
 
 
 // DEBUG LOGGER
@@ -206,38 +208,23 @@ function logDebug(text){
 }
 
 
-// INIT SHAKA
+// INIT VIDEO.JS
 
-async function initPlayer(){
-
-  shaka.polyfill.installAll();
-
-  if(!shaka.Player.isBrowserSupported()){
-
-    logDebug(
-      "Browser not supported ❌"
-    );
-
-    return;
+const player = videojs(
+  'videoPlayer',
+  {
+    controls:true,
+    autoplay:false,
+    preload:'auto',
+    fluid:true,
+    responsive:true
   }
-
-  player =
-  new shaka.Player(video);
-
-  player.addEventListener(
-    'error',
-    onErrorEvent
-  );
-
-  logDebug(
-    "Shaka Player initialized ✅"
-  );
-}
+);
 
 
 // START STREAMING
 
-async function startStreaming(){
+function startStreaming(){
 
   const params =
   new URLSearchParams(location.search);
@@ -260,25 +247,62 @@ async function startStreaming(){
   logDebug("Loading stream...");
   logDebug("URL received.");
 
-  try{
+  // DETECT TYPE
 
-    await player.load(link);
+  let type = "video/mp4";
+
+  if(link.includes(".m3u8")){
+
+    type =
+    "application/x-mpegURL";
+  }
+
+  else if(link.includes(".mpd")){
+
+    type =
+    "application/dash+xml";
+  }
+
+  else if(link.includes(".mkv")){
+
+    type =
+    "video/x-matroska";
+  }
+
+  logDebug(
+    "Detected type: " + type
+  );
+
+  player.src({
+    src:link,
+    type:type
+  });
+
+  player.ready(()=>{
 
     statusText.innerText =
     "Video loaded ✅";
 
     logDebug(
-      "Stream loaded successfully."
+      "Player ready."
     );
 
     inspectTracks();
+  });
 
-  }
+  player.on('error',()=>{
 
-  catch(error){
+    const error =
+    player.error();
 
-    onError(error);
-  }
+    statusText.innerText =
+    "⚠ Video failed";
+
+    logDebug(
+      "Player Error: " +
+      JSON.stringify(error)
+    );
+  });
 }
 
 
@@ -286,83 +310,108 @@ async function startStreaming(){
 
 function inspectTracks(){
 
-  const audioTracks =
-  player.getAudioLanguages();
+  try{
 
-  const textTracks =
-  player.getTextLanguages();
+    const audioTracks =
+    player.audioTracks();
 
-  logDebug(
-    "Audio Languages: " +
-    JSON.stringify(audioTracks)
-  );
-
-  logDebug(
-    "Subtitle Languages: " +
-    JSON.stringify(textTracks)
-  );
-
-  const variants =
-  player.getVariantTracks();
-
-  logDebug(
-    "Variant Tracks Count: " +
-    variants.length
-  );
-
-  console.log(
-    "Variants:",
-    variants
-  );
-
-  if(variants.length > 0){
-
-    variants.forEach((v,i)=>{
-
-      logDebug(
-        "Track " + i +
-        " | language: " +
-        v.language +
-        " | audioId: " +
-        v.audioId
-      );
-    });
-
-  } else {
+    const textTracks =
+    player.textTracks();
 
     logDebug(
-      "No variant tracks found ⚠"
+      "AudioTracks object: " +
+      (!!audioTracks)
+    );
+
+    logDebug(
+      "TextTracks object: " +
+      (!!textTracks)
+    );
+
+    if(audioTracks){
+
+      logDebug(
+        "Audio track count: " +
+        audioTracks.length
+      );
+
+      for(let i=0;
+          i<audioTracks.length;
+          i++){
+
+        const track =
+        audioTracks[i];
+
+        logDebug(
+          "Track " + i +
+          " | label: " +
+          track.label +
+          " | language: " +
+          track.language
+        );
+      }
+
+    } else {
+
+      logDebug(
+        "audioTracks unsupported"
+      );
+    }
+
+    if(textTracks){
+
+      logDebug(
+        "Subtitle track count: " +
+        textTracks.length
+      );
+    }
+
+  }
+
+  catch(error){
+
+    logDebug(
+      "Track inspection failed: " +
+      error.message
     );
   }
 }
 
 
-// ERROR HANDLING
+// EVENTS
 
-function onErrorEvent(event){
-
-  onError(event.detail);
-}
-
-function onError(error){
-
-  console.error(error);
-
-  statusText.innerText =
-  "⚠ Video failed";
+player.on('loadedmetadata',()=>{
 
   logDebug(
-    "Error: " + error.code
+    "loadedmetadata fired."
   );
-}
+
+  inspectTracks();
+});
 
 
-// INIT
+player.on('play',()=>{
 
-document.addEventListener(
-  'DOMContentLoaded',
-  initPlayer
-);
+  logDebug(
+    "Playback started."
+  );
+});
+
+
+player.on('waiting',()=>{
+
+  logDebug(
+    "Buffering..."
+  );
+});
+
+
+player.on('dispose',()=>{
+
+  logDebug(
+    "Player disposed."
+  );
+});
 
 </script>
 
