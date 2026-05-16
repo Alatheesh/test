@@ -3,7 +3,6 @@
 <head>
   <title>Advanced Streaming Player</title>
 
-  <!-- Plyr CSS -->
   <link rel="stylesheet"
   href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
@@ -74,6 +73,23 @@
       margin-top:15px;
       color:#aaa;
       font-size:14px;
+      line-height:1.6;
+    }
+
+    .debug-box{
+      margin-top:20px;
+      background:#111;
+      border:1px solid #333;
+      border-radius:10px;
+      padding:15px;
+      max-width:900px;
+      margin-left:auto;
+      margin-right:auto;
+      text-align:left;
+      color:#00ff88;
+      font-size:13px;
+      overflow:auto;
+      white-space:pre-wrap;
     }
 
     .disclaimer{
@@ -143,7 +159,9 @@
   Waiting for stream...
 </div>
 
-<!-- DISCLAIMER -->
+<div class="debug-box" id="debugBox">
+Debug logs will appear here...
+</div>
 
 <div class="disclaimer">
 
@@ -165,8 +183,6 @@
 
 </div>
 
-<!-- Plyr JS -->
-
 <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 <script>
@@ -183,8 +199,22 @@ document.getElementById("subtitleSelect");
 const statusText =
 document.getElementById("status");
 
+const debugBox =
+document.getElementById("debugBox");
 
-// INIT PLYR
+
+// DEBUG LOGGER
+
+function logDebug(text){
+
+  console.log(text);
+
+  debugBox.innerHTML +=
+  "\\n" + text;
+}
+
+
+// INIT PLAYER
 
 const player =
 new Plyr('#player');
@@ -207,13 +237,17 @@ function startStreaming(){
     return;
   }
 
+  debugBox.innerHTML = "";
+
   statusText.innerText =
   "Loading stream...";
 
+  logDebug("Loading stream...");
+  logDebug("Video URL received.");
+
   video.src = link;
 
-  // Wait for metadata
-  setTimeout(loadTracks,3000);
+  setTimeout(loadTracks,4000);
 }
 
 
@@ -221,75 +255,131 @@ function startStreaming(){
 
 function loadTracks(){
 
-  console.log("Audio Tracks:",
+  logDebug("Checking tracks...");
+
+  logDebug(
+    "audioTracks support: " +
+    (!!video.audioTracks)
+  );
+
+  logDebug(
+    "textTracks support: " +
+    (!!video.textTracks)
+  );
+
+  console.log("VIDEO:", video);
+
+  console.log("audioTracks:",
   video.audioTracks);
 
-  console.log("Subtitle Tracks:",
+  console.log("textTracks:",
   video.textTracks);
+
 
   // AUDIO TRACKS
 
-  if(video.audioTracks &&
-     video.audioTracks.length > 0){
+  if(video.audioTracks){
 
-    audioSelect.innerHTML = "";
+    logDebug(
+      "Audio track length: " +
+      video.audioTracks.length
+    );
 
-    for(let i=0;
-        i<video.audioTracks.length;
-        i++){
+    if(video.audioTracks.length > 0){
 
-      const track =
-      video.audioTracks[i];
+      audioSelect.innerHTML = "";
 
-      const option =
-      document.createElement("option");
+      for(let i=0;
+          i<video.audioTracks.length;
+          i++){
 
-      option.value = i;
+        const track =
+        video.audioTracks[i];
 
-      option.textContent =
-        track.label ||
-        track.language ||
-        ("Track " + (i+1));
+        logDebug(
+          "Track " + i +
+          ": " +
+          JSON.stringify(track)
+        );
 
-      audioSelect.appendChild(option);
+        const option =
+        document.createElement("option");
+
+        option.value = i;
+
+        option.textContent =
+          track.label ||
+          track.language ||
+          ("Track " + (i+1));
+
+        audioSelect.appendChild(option);
+      }
+
+      statusText.innerText =
+      "Audio tracks detected ✅";
+
+      logDebug(
+        "Switchable audio tracks FOUND."
+      );
+
+    } else {
+
+      audioSelect.innerHTML =
+      "<option>No audio tracks found</option>";
+
+      statusText.innerText =
+      "No switchable audio tracks detected ⚠";
+
+      logDebug(
+        "audioTracks exists but length = 0"
+      );
     }
-
-    statusText.innerText =
-    "Audio tracks detected ✅";
 
   } else {
 
     audioSelect.innerHTML =
-    "<option>No audio tracks found</option>";
+    "<option>audioTracks unsupported</option>";
 
-    statusText.innerText =
-    "No switchable audio tracks detected ⚠";
+    logDebug(
+      "Browser does NOT support audioTracks API."
+    );
   }
 
 
   // SUBTITLE TRACKS
 
-  if(video.textTracks &&
-     video.textTracks.length > 0){
+  if(video.textTracks){
 
-    for(let i=0;
-        i<video.textTracks.length;
-        i++){
+    logDebug(
+      "Subtitle track length: " +
+      video.textTracks.length
+    );
 
-      const track =
-      video.textTracks[i];
+    if(video.textTracks.length > 0){
 
-      const option =
-      document.createElement("option");
+      for(let i=0;
+          i<video.textTracks.length;
+          i++){
 
-      option.value = i;
+        const track =
+        video.textTracks[i];
 
-      option.textContent =
-        track.label ||
-        track.language ||
-        ("Subtitle " + (i+1));
+        const option =
+        document.createElement("option");
 
-      subtitleSelect.appendChild(option);
+        option.value = i;
+
+        option.textContent =
+          track.label ||
+          track.language ||
+          ("Subtitle " + (i+1));
+
+        subtitleSelect.appendChild(option);
+      }
+
+      logDebug(
+        "Subtitle tracks detected."
+      );
     }
   }
 }
@@ -303,6 +393,11 @@ audioSelect.addEventListener("change",()=>{
   video.audioTracks;
 
   if(!tracks) return;
+
+  logDebug(
+    "Switching audio to track: " +
+    audioSelect.value
+  );
 
   for(let i=0;i<tracks.length;i++){
 
@@ -318,6 +413,10 @@ subtitleSelect.addEventListener("change",()=>{
 
   const tracks =
   video.textTracks;
+
+  logDebug(
+    "Switching subtitle track."
+  );
 
   for(let i=0;i<tracks.length;i++){
 
@@ -336,13 +435,22 @@ video.addEventListener("loadedmetadata",()=>{
   statusText.innerText =
   "Video loaded ✅";
 
+  logDebug(
+    "loadedmetadata fired."
+  );
+
   loadTracks();
 });
+
 
 video.onerror = ()=>{
 
   statusText.innerText =
   "⚠ Failed to load video";
+
+  logDebug(
+    "Video failed to load."
+  );
 
   alert("Video failed to load ❌");
 };
