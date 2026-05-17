@@ -112,6 +112,12 @@ body{
   0 0 25px rgba(0,0,0,0.35);
 }
 
+/* FIX CONTENT UNDER FIXED TOP BAR */
+
+.hero{
+  margin-top:120px;
+}
+
 /* PREMIUM LOGO */
 
 .logo{
