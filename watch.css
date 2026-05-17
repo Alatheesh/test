@@ -84,6 +84,7 @@ body{
 }
 
 /* TOP BAR */
+/* TOP BAR */
 
 .top-bar{
   width:100%;
@@ -100,22 +101,22 @@ body{
 
   z-index:9999;
 
-  backdrop-filter:blur(16px);
+  backdrop-filter:blur(18px);
 
   background:
-  rgba(0,0,0,0.72);
+  rgba(0,0,0,0.82);
 
   border-bottom:
   1px solid rgba(255,255,255,0.05);
 
   box-shadow:
-  0 0 25px rgba(0,0,0,0.35);
+  0 0 30px rgba(0,0,0,0.45);
 }
 
-/* FIX CONTENT UNDER FIXED TOP BAR */
+/* FIX PAGE GOING UNDER TOP BAR */
 
-.hero{
-  margin-top:120px;
+body{
+  padding-top:110px;
 }
 
 /* PREMIUM LOGO */
