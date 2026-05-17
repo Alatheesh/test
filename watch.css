@@ -7,10 +7,16 @@
 body{
   background:#020202;
   color:white;
+
   font-family:Arial,sans-serif;
+
   overflow-x:hidden;
+
   min-height:100vh;
+
   position:relative;
+
+  padding-top:105px;
 }
 
 /* BACKGROUND */
@@ -84,7 +90,6 @@ body{
 }
 
 /* TOP BAR */
-/* TOP BAR */
 
 .top-bar{
   width:100%;
@@ -111,12 +116,6 @@ body{
 
   box-shadow:
   0 0 30px rgba(0,0,0,0.45);
-}
-
-/* FIX PAGE GOING UNDER TOP BAR */
-
-body{
-  padding-top:110px;
 }
 
 /* PREMIUM LOGO */
@@ -178,35 +177,6 @@ body{
   logoGlowMove 7s ease infinite;
 }
 
-.logo::after{
-  content:"";
-
-  position:absolute;
-  inset:0;
-
-  border-radius:24px;
-
-  padding:1px;
-
-  background:
-  linear-gradient(
-    135deg,
-    rgba(0,220,255,0.35),
-    rgba(0,80,255,0.05),
-    rgba(255,255,255,0.06)
-  );
-
-  -webkit-mask:
-  linear-gradient(#fff 0 0) content-box,
-  linear-gradient(#fff 0 0);
-
-  -webkit-mask-composite:xor;
-
-  mask-composite:exclude;
-
-  pointer-events:none;
-}
-
 .logo:hover{
   transform:
   translateY(-2px)
@@ -260,9 +230,6 @@ body{
 
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-
-  text-shadow:
-  0 0 20px rgba(0,190,255,0.25);
 }
 
 /* BUTTONS */
@@ -312,30 +279,13 @@ body{
 
 .hero{
   width:100%;
+
   text-align:center;
-  padding:90px 20px 50px;
-}
 
-.hero-badge{
-  display:inline-block;
+  padding:
+  20px 20px 35px;
 
-  padding:10px 18px;
-
-  border-radius:40px;
-
-  background:
-  rgba(255,255,255,0.06);
-
-  border:
-  1px solid rgba(255,255,255,0.08);
-
-  margin-bottom:25px;
-
-  color:#bbb;
-
-  font-size:13px;
-
-  backdrop-filter:blur(10px);
+  margin-top:0;
 }
 
 .hero h1{
@@ -352,9 +302,6 @@ body{
 
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-
-  animation:
-  fadeUp 1s ease;
 }
 
 .hero p{
@@ -397,8 +344,6 @@ body{
   animation:
   fadeUp 1s ease,
   ambientGlow 8s ease infinite;
-
-  transition:0.3s;
 }
 
 .video-js{
@@ -406,32 +351,6 @@ body{
   height:720px;
   background:black;
 }
-
-.live-badge{
-  position:absolute;
-  top:20px;
-  left:20px;
-
-  padding:10px 16px;
-
-  border-radius:40px;
-
-  background:
-  rgba(0,170,255,0.15);
-
-  border:
-  1px solid rgba(255,255,255,0.08);
-
-  backdrop-filter:blur(10px);
-
-  color:white;
-
-  font-size:12px;
-
-  z-index:30;
-}
-
-/* VIDEO JS */
 
 .vjs-control-bar{
   background:
@@ -452,8 +371,6 @@ body{
 
   background:
   rgba(0,160,255,0.85) !important;
-
-  transition:0.3s !important;
 }
 
 /* CONTROLS */
@@ -504,9 +421,6 @@ body{
   transform:
   translateY(-2px)
   scale(1.04);
-
-  box-shadow:
-  0 0 20px rgba(0,170,255,0.35);
 }
 
 .speed-select option{
@@ -624,9 +538,6 @@ body{
   gap:22px;
 
   flex-wrap:wrap;
-
-  position:relative;
-  z-index:60;
 }
 
 .footer-links a{
@@ -635,16 +546,10 @@ body{
   text-decoration:none;
 
   transition:0.3s;
-
-  position:relative;
-  z-index:70;
 }
 
 .footer-links a:hover{
   color:white;
-
-  text-shadow:
-  0 0 10px rgba(0,190,255,0.4);
 }
 
 /* ANIMATIONS */
@@ -710,7 +615,6 @@ body{
 }
 
 @keyframes logoGlowMove{
-
   0%{
     transform:
     translateX(0px)
@@ -728,11 +632,9 @@ body{
     translateX(0px)
     translateY(0px);
   }
-
 }
 
 @keyframes logoFloat{
-
   0%{
     transform:translateY(0px);
   }
@@ -744,7 +646,6 @@ body{
   100%{
     transform:translateY(0px);
   }
-
 }
 
 /* FIX CLICK ISSUES */
