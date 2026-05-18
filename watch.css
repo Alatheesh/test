@@ -273,8 +273,9 @@ body{
 
   text-align:center;
 
+  /* Increased top padding from 20px to 90px to prevent overlap with the header */
   padding:
-  20px 20px 25px;
+  90px 20px 25px;
 
   position:relative;
 
