@@ -153,9 +153,11 @@ body{
 .hero h1{
   font-size:58px;
   font-weight:bold;
-  background: linear-gradient(90deg, #7cecff, #00bfff, #7d7dff);
+  background: linear-gradient(90deg, #7cecff, #00bfff, #7d7dff, #7cecff);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  background-size: 200% auto;
+  animation: textShimmer 6s linear infinite;
 }
 
 .hero p{
@@ -195,7 +197,14 @@ body{
   z-index:1;
   box-shadow: 0 0 60px rgba(0,150,255,0.12);
   animation: fadeUp 1s ease, ambientGlow 8s ease infinite;
-  transition:0.3s;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.player-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 
+    0 20px 80px rgba(0, 191, 255, 0.25), 
+    0 0 40px rgba(141, 124, 255, 0.15);
 }
 
 .video-js{
@@ -352,6 +361,12 @@ body{
   0% { width: 0%; opacity: 0; }
   30% { width: 60%; opacity: 1; }
   100% { width: 75%; opacity: 0.6; box-shadow: 0 0 10px rgba(0, 191, 255, 0.4); }
+}
+
+@keyframes textShimmer {
+  to {
+    background-position: 200% center;
+  }
 }
 
 /* MOBILE */
