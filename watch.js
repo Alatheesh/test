@@ -11,7 +11,6 @@ videojs(
 );
 
 // ELEMENTS
-
 const loadingScreen=
 document.getElementById(
   "loadingScreen"
@@ -22,10 +21,14 @@ document.getElementById(
   "bufferLoader"
 );
 
+// Grab the play button so we can change its text
+const playBtn=
+document.getElementById(
+  "playPauseBtn"
+);
+
 // START STREAMING
-
 function startStreaming(){
-
   const params=
   new URLSearchParams(
     location.search
@@ -35,82 +38,74 @@ function startStreaming(){
   params.get("link");
 
   if(!link){
-
     showToast(
       "No stream link found"
     );
-
     return;
-
   }
 
   let type=
   "video/mp4";
 
   // STREAM TYPE
-
   if(link.includes(".m3u8")){
-
     type=
     "application/x-mpegURL";
-
   }
-
   else if(link.includes(".mpd")){
-
     type=
     "application/dash+xml";
-
   }
-
   else if(link.includes(".mkv")){
-
     type=
     "video/x-matroska";
-
   }
 
   // LOAD PLAYER
-
   player.src({
-
     src:link,
     type:type
-
   });
-
 }
 
 // PLAY / PAUSE
-
 function togglePlay(){
-
   if(player.paused()){
-
     player.play();
-
     showToast(
       "Playing"
     );
-
   }
-
   else{
-
     player.pause();
-
     showToast(
       "Paused"
     );
-
   }
+}
 
+// INCREASE VOLUME
+function increaseVolume(){
+  let currentVol = player.volume();
+  player.volume(Math.min(currentVol + 0.1, 1.0));
+  
+  showToast(
+    "Volume: " + Math.round(player.volume() * 100) + "%"
+  );
+}
+
+// DECREASE VOLUME
+function decreaseVolume(){
+  let currentVol = player.volume();
+  player.volume(Math.max(currentVol - 0.1, 0.0));
+  
+  showToast(
+    "Volume: " + Math.round(player.volume() * 100) + "%"
+  );
 }
 
 // SKIP FORWARD
-
 function skipForward(){
-
   player.currentTime(
     player.currentTime() + 10
   );
@@ -120,13 +115,10 @@ function skipForward(){
   showToast(
     "+10 Seconds"
   );
-
 }
 
 // SKIP BACKWARD
-
 function skipBackward(){
-
   player.currentTime(
     player.currentTime() - 10
   );
@@ -136,28 +128,21 @@ function skipBackward(){
   showToast(
     "-10 Seconds"
   );
-
 }
 
 // FULLSCREEN
-
 function toggleFullscreen(){
-
   const wrapper=
   document.querySelector(
     ".player-card"
   );
 
   if(wrapper.requestFullscreen){
-
     wrapper.requestFullscreen();
-
   }
-
 }
 
 // PLAYBACK SPEED
-
 document
 .getElementById(
   "speedControl"
@@ -165,7 +150,6 @@ document
 .addEventListener(
   "change",
   (e)=>{
-
     player.playbackRate(
       Number(
         e.target.value
@@ -176,14 +160,11 @@ document
       "Speed: " +
       e.target.value + "x"
     );
-
   }
 );
 
 // COPY STREAM LINK
-
 function copyStreamLink(){
-
   navigator.clipboard.writeText(
     location.href
   );
@@ -191,13 +172,10 @@ function copyStreamLink(){
   showToast(
     "Stream link copied"
   );
-
 }
 
 // OPEN EXTERNAL PLAYER
-
 function openExternalPlayer(){
-
   const params=
   new URLSearchParams(
     location.search
@@ -209,117 +187,123 @@ function openExternalPlayer(){
   window.open(
     link
   );
-
 }
 
 // PLAYER READY
-
 player.on(
   'loadedmetadata',
   ()=>{
-
     loadingScreen.style.display=
     "none";
 
     showToast(
       "Premium Stream Ready"
     );
-
   }
 );
 
 // BUFFER START
-
 player.on(
   "waiting",
   ()=>{
-
     bufferLoader.classList.add(
       "show"
     );
-
   }
 );
 
 // BUFFER END
-
 player.on(
   "playing",
   ()=>{
-
     bufferLoader.classList.remove(
       "show"
     );
+  }
+);
 
+// DYNAMIC PLAY/PAUSE BUTTON TEXT
+player.on(
+  "play", 
+  ()=>{
+    if(playBtn) {
+      playBtn.innerHTML = "⏸ Pause";
+    }
+  }
+);
+
+player.on(
+  "pause", 
+  ()=>{
+    if(playBtn) {
+      playBtn.innerHTML = "⏯ Play";
+    }
   }
 );
 
 // PLAYER ENDED
-
 player.on(
   "ended",
   ()=>{
-
     showToast(
       "Playback Finished"
     );
-
   }
 );
 
 // KEYBOARD SHORTCUTS
-
 document.addEventListener(
   "keydown",
   (e)=>{
 
     // SPACE
-
     if(e.code === "Space"){
-
       e.preventDefault();
-
       togglePlay();
-
     }
 
     // RIGHT
-
     if(
       e.code === "ArrowRight"
     ){
-
       skipForward();
-
     }
 
     // LEFT
-
     if(
       e.code === "ArrowLeft"
     ){
-
       skipBackward();
+    }
 
+    // UP (Volume Up)
+    if(
+      e.code === "ArrowUp"
+    ){
+      e.preventDefault();
+      increaseVolume();
+    }
+
+    // DOWN (Volume Down)
+    if(
+      e.code === "ArrowDown"
+    ){
+      e.preventDefault();
+      decreaseVolume();
     }
 
     // FULLSCREEN
-
     if(
       e.key.toLowerCase() === "f"
     ){
-
       toggleFullscreen();
-
     }
 
   }
 );
 
 // PLAYER PULSE EFFECT
-
 function pulsePlayer(){
-
   const card=
   document.querySelector(
     ".player-card"
@@ -329,18 +313,13 @@ function pulsePlayer(){
   "scale(1.01)";
 
   setTimeout(()=>{
-
     card.style.transform=
     "scale(1)";
-
   },150);
-
 }
 
 // PREMIUM TOAST
-
 function showToast(text){
-
   const toast=
   document.createElement(
     "div"
@@ -393,25 +372,19 @@ function showToast(text){
   );
 
   setTimeout(()=>{
-
     toast.style.opacity=
     "0";
 
     toast.style.transition=
     "0.4s";
-
   },1200);
 
   setTimeout(()=>{
-
     toast.remove();
-
   },1600);
-
 }
 
 // AUTO START
-
 window.addEventListener(
   "DOMContentLoaded",
   startStreaming
