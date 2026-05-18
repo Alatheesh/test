@@ -55,9 +55,14 @@
       <div class="live-badge">● PREMIUM STREAM</div>
 
       <div class="premium-controls">
+        <button onclick="decreaseVolume()" class="premium-btn">🔉 Vol -</button>
         <button onclick="skipBackward()" class="premium-btn">⏪ 10s</button>
-        <button onclick="togglePlay()" class="premium-btn">⏯ Play</button>
+        
+        <button id="playPauseBtn" onclick="togglePlay()" class="premium-btn">⏯ Play</button>
+        
         <button onclick="skipForward()" class="premium-btn">10s ⏩</button>
+        <button onclick="increaseVolume()" class="premium-btn">🔊 Vol +</button>
+        
         <select id="speedControl" class="speed-select">
           <option value="0.5">0.5x</option>
           <option value="1" selected>1x</option>
