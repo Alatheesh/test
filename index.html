@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Stream</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: #fff; padding-top: 40px; }
+        .ad-space { background: #1e1e1e; border: 1px dashed #444; padding: 20px; margin: 20px auto; color: #888; width: 90%; max-width: 400px; }
+        #timer { font-size: 48px; font-weight: bold; margin: 20px 0; color: #0088cc; }
+        button { background: #0088cc; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; display: none; margin: 0 auto; width: 80%; max-width: 300px; }
+    </style>
+</head>
+<body>
+    <h2>🍿 Secure Video Gateway</h2>
+    <div class="ad-space">Ad Banner 1</div>
+    <div id="status-text">Generating secure stream...</div>
+    <div id="timer">5</div>
+    <button id="unlock-btn" onclick="unlockVideo()">🎬 Open Video Stream</button>
+    <div class="ad-space">Ad Banner 2</div>
+
+    <script>
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+
+        let timeLeft = 5;
+        const timerEl = document.getElementById('timer');
+        const btnEl = document.getElementById('unlock-btn');
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerEl.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerEl.style.display = 'none';
+                btnEl.style.display = 'block';
+            }
+        }, 1000);
+
+        function unlockVideo() {
+            const token = new URLSearchParams(window.location.search).get('token');
+            // CHANGE THIS TO YOUR BOT'S USERNAME
+            const botUsername = "YourBotUsername"; 
+            window.Telegram.WebApp.openTelegramLink(`https://t.me/${botUsername}?start=stream_${token}`);
+        }
+    </script>
+</body>
+</html>
