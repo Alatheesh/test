@@ -41,7 +41,7 @@
         function unlockVideo() {
             const token = new URLSearchParams(window.location.search).get('token');
             // CHANGE THIS TO YOUR BOT'S USERNAME
-            const botUsername = "YourBotUsername"; 
+            const botUsername = "ntm_file2link_bot"; 
             window.Telegram.WebApp.openTelegramLink(`https://t.me/${botUsername}?start=stream_${token}`);
         }
     </script>
