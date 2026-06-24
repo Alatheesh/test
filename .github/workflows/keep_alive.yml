@@ -17,11 +17,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22'
-        cache: 'npm'
+        node-version: '22' # Uses the modern Node version
 
     - name: Install Dependencies
-      run: npm install
+      run: npm install # Standard install without requiring a lock file
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps
